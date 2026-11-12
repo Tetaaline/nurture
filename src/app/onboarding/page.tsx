@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { PublicShell } from "@/components/app-shell";
 import { Card } from "@/components/ui";
@@ -28,6 +29,7 @@ export default function OnboardingPage() {
 }
 
 async function OnboardingGate() {
+  await connection();
   const { userId, redirectToSignIn } = await auth();
   if (!userId) return redirectToSignIn();
   const user = await prisma.user.findUnique({

@@ -43,6 +43,8 @@ export function apiHandler<Args extends unknown[]>(
     try {
       return await handler(...args);
     } catch (error) {
+      // Next.js signals (redirects, prerender bailouts) carry a digest and must propagate.
+      if (typeof (error as { digest?: unknown })?.digest === "string") throw error;
       if (error instanceof HttpError) {
         return json({ error: error.message }, error.status);
       }
