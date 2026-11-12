@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { AppShell } from "@/components/app-shell";
+import { FamilyCard } from "@/components/family-card";
 import { BookIcon, PeopleIcon } from "@/components/icons";
 import { Card, HealthcareNotice, focusRing } from "@/components/ui";
 import { requirePageRole } from "@/lib/auth";
@@ -48,12 +49,15 @@ export default function ParentHomePage() {
 async function Greeting() {
   const user = await requirePageRole("PARENT");
   return (
-    <div className="flex flex-col gap-1">
-      <h1 className="text-2xl font-semibold text-ink sm:text-3xl">
-        Hello, {user.displayName}
-      </h1>
-      <p className="text-muted">Small conversations add up. Where would you like to start?</p>
-    </div>
+    <>
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-semibold text-ink sm:text-3xl">
+          Hello, {user.displayName}
+        </h1>
+        <p className="text-muted">Small conversations add up. Where would you like to start?</p>
+      </div>
+      <FamilyCard user={user} />
+    </>
   );
 }
 
