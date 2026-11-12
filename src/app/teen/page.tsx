@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { AppShell } from "@/components/app-shell";
 import { FamilyCard } from "@/components/family-card";
-import { PenIcon, PeopleIcon, SpeechIcon } from "@/components/icons";
+import { HeartIcon, PenIcon, PeopleIcon, SpeechIcon } from "@/components/icons";
 import { Card, HealthcareNotice, focusRing } from "@/components/ui";
 import { requirePageRole } from "@/lib/auth";
 
@@ -13,6 +13,13 @@ const sections = [
     description: "A private place to write things down. Only you can see it.",
     icon: <PenIcon />,
     tone: "soft" as const,
+  },
+  {
+    href: "/teen/express/checkin",
+    title: "Feelings check-in",
+    description: "Pick a feeling and, if you like, say what is behind it.",
+    icon: <HeartIcon />,
+    tone: "surface" as const,
   },
   {
     href: "/teen/express",
