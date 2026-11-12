@@ -126,6 +126,7 @@ model FeelingsCheckIn {
 
 model EducationalResource {
   id          String       @id @default(cuid())
+  slug        String       @unique @db.VarChar(80)
   type        ResourceType
   audience    Audience
   category    String       @db.VarChar(60)
@@ -141,6 +142,7 @@ model EducationalResource {
 
 model ConversationStarter {
   id         String  @id @default(cuid())
+  key        String  @unique @db.VarChar(80)
   text       String  @db.VarChar(300)
   category   String  @db.VarChar(60)
   resourceId String?
