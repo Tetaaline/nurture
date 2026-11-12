@@ -11,7 +11,7 @@ export default function JournalPage() {
   return (
     <AppShell role="TEEN">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <PageTitle lead="Only you can see what you write here.">My journal</PageTitle>
+        <PageTitle lead="Only you can see this, not even your parent.">My journal</PageTitle>
         <ButtonLink href="/teen/journal/new">
           <PlusIcon size={18} />
           New entry

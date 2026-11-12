@@ -91,7 +91,7 @@ export function JournalEditor({
           onChange={(event) => setBody(event.target.value)}
           rows={10}
           className={`${inputClass} min-h-48 resize-y`}
-          placeholder="Write freely. No one else can read this."
+          placeholder="Write freely. Only you can see this, not even your parent."
           aria-invalid={fields.body ? true : undefined}
           aria-describedby={fields.body ? "body-error" : undefined}
         />
