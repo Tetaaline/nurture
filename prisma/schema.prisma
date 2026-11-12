@@ -6,3 +6,159 @@ generator client {
 datasource db {
   provider = "mysql"
 }
+
+enum Role {
+  PARENT
+  TEEN
+}
+
+enum CodeStatus {
+  ACTIVE
+  REDEEMED
+  REVOKED
+  EXPIRED
+}
+
+enum Feeling {
+  HAPPY
+  CALM
+  EXCITED
+  WORRIED
+  SAD
+  ANGRY
+  STRESSED
+  CONFUSED
+}
+
+enum ResourceType {
+  GUIDE
+  SENSITIVE_TOPIC
+  SCENARIO
+  OPENER
+  TEEN_STORY
+}
+
+enum Audience {
+  PARENT
+  TEEN
+  BOTH
+}
+
+model User {
+  id             String   @id @default(cuid())
+  authProviderId String   @unique
+  email          String
+  displayName    String   @db.VarChar(60)
+  role           Role
+  createdAt      DateTime @default(now())
+
+  familyAsParent      Family?              @relation("FamilyParent")
+  familyAsTeen        Family?              @relation("FamilyTeen")
+  journalEntries      JournalEntry[]
+  checkIns            FeelingsCheckIn[]
+  redemptionAttempts  RedemptionAttempt[]
+  redeemedCodes       InvitationCode[]
+  conversationRecords ConversationRecord[]
+}
+
+model Family {
+  id        String   @id @default(cuid())
+  parentId  String   @unique
+  teenId    String?  @unique
+  createdAt DateTime @default(now())
+
+  parent              User                 @relation("FamilyParent", fields: [parentId], references: [id], onDelete: Cascade)
+  teen                User?                @relation("FamilyTeen", fields: [teenId], references: [id], onDelete: SetNull)
+  invitationCodes     InvitationCode[]
+  conversationRecords ConversationRecord[]
+}
+
+model InvitationCode {
+  id           String     @id @default(cuid())
+  familyId     String
+  codeHash     String     @unique
+  status       CodeStatus @default(ACTIVE)
+  expiresAt    DateTime
+  createdAt    DateTime   @default(now())
+  redeemedById String?
+
+  family     Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  redeemedBy User?  @relation(fields: [redeemedById], references: [id], onDelete: SetNull)
+
+  @@index([familyId, status])
+}
+
+model RedemptionAttempt {
+  id        String   @id @default(cuid())
+  userId    String
+  success   Boolean
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model JournalEntry {
+  id        String   @id @default(cuid())
+  ownerId   String
+  title     String?  @db.VarChar(100)
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId, createdAt])
+}
+
+model FeelingsCheckIn {
+  id        String   @id @default(cuid())
+  ownerId   String
+  feeling   Feeling
+  note      String?  @db.VarChar(500)
+  createdAt DateTime @default(now())
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId, createdAt])
+}
+
+model EducationalResource {
+  id          String       @id @default(cuid())
+  type        ResourceType
+  audience    Audience
+  category    String       @db.VarChar(60)
+  title       String       @db.VarChar(160)
+  body        String       @db.Text
+  isPublished Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+
+  starters ConversationStarter[]
+
+  @@index([type, isPublished])
+}
+
+model ConversationStarter {
+  id         String  @id @default(cuid())
+  text       String  @db.VarChar(300)
+  category   String  @db.VarChar(60)
+  resourceId String?
+
+  resource EducationalResource? @relation(fields: [resourceId], references: [id], onDelete: SetNull)
+  records  ConversationRecord[]
+}
+
+model ConversationRecord {
+  id           String   @id @default(cuid())
+  familyId     String
+  recordedById String
+  starterId    String?
+  completedAt  DateTime @default(now())
+
+  family     Family               @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  recordedBy User                 @relation(fields: [recordedById], references: [id], onDelete: Cascade)
+  starter    ConversationStarter? @relation(fields: [starterId], references: [id], onDelete: SetNull)
+
+  @@index([familyId, completedAt])
+}
