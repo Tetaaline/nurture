@@ -65,4 +65,6 @@ NURTURE is an educational tool. It is not a replacement for professional healthc
 
 ## Status
 
-Sprint 2 complete: sign up and sign in with Clerk, onboarding (display name and role), parent and teen dashboards, and the private teen journal with its API. Next: family linking with invitation codes and the weekly streak (Sprint 3).
+Sprint 3 complete: sign up and sign in with Clerk, onboarding, dashboards, the private teen journal, family linking with single-use invitation codes, and the weekly conversation streak. Next: educational content, conversation starters and the feelings check-in (Sprint 4).
+
+Run the unit tests with `npm test`.
