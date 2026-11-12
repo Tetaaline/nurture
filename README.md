@@ -1,25 +1,31 @@
 # NURTURE
 
-NURTURE is a responsive web app that helps parents and teenagers talk to each other with understanding, honesty and care.
+NURTURE is a responsive web app that helps parents and teenagers talk to each other openly.
+
+Live site: https://nurture-chi-flax.vercel.app
 
 ## What it helps with
 
-- **Understand**: see what your teen or parent is really feeling.
-- **Express**: find the words for hard topics and share them calmly.
-- **Connect**: turn better conversations into a stronger bond.
+- **Understand**: practical guidance for parents on emotions, puberty, discipline and more.
+- **Express**: tools for teens to name their feelings and find the words to share them.
+- **Connect**: conversation starters and a weekly streak for the whole family.
+
+NURTURE is an educational tool. It is not a replacement for professional healthcare.
 
 ## Tech stack
 
-- [Next.js](https://nextjs.org) with TypeScript
-- [Tailwind CSS](https://tailwindcss.com)
-- Prisma with MySQL (local development uses XAMPP)
-- [Clerk](https://clerk.com) for login (planned for Sprint 2)
-- Deployment on Vercel
+- [Next.js 16](https://nextjs.org) (App Router) with TypeScript
+- [Tailwind CSS 4](https://tailwindcss.com)
+- [Prisma 7](https://www.prisma.io) with MySQL (local development uses XAMPP)
+- [Clerk](https://clerk.com) for login
+- [TiDB Cloud Starter](https://www.pingcap.com/tidb-cloud-starter/) as the hosted database
+- [Vercel](https://vercel.com) for hosting
 
 ## Decisions
 
-- **Login provider: Clerk.** The SRS (sections 2.4 and 3.3) says NURTURE uses a managed authentication provider and stores no passwords. NURTURE's own `User` table will store the Clerk user ID, the role (`PARENT` or `TEEN`), the display name and the family link. The role is chosen on an onboarding page after sign-up.
-- **Hosted database: Aiven for MySQL (free plan).** It is real MySQL, the same as the local XAMPP database and the SRS, so Prisma and the app code behave the same everywhere. TiDB Cloud Starter is the backup if Aiven causes problems. The Aiven service will be created in Sprint 2, when sign-in needs it. Until then the app uses the local XAMPP database.
+- **Login provider: Clerk.** The SRS (sections 2.4 and 3.3) says NURTURE uses a managed authentication provider and stores no passwords. NURTURE's own `User` table stores the Clerk user ID, the role (`PARENT` or `TEEN`), the display name and the family link. The role is chosen on an onboarding page after sign-up.
+- **Hosted database: TiDB Cloud Starter.** Free with no time limit and MySQL-compatible, so Prisma and my code work the same as with my local XAMPP database. Aiven for MySQL was the first choice, but it only offered a 30-day trial, so it was dropped. The instance runs in AWS N. Virginia (us-east-1), close to Vercel's servers, with a $0 spending limit.
+- **TLS to TiDB.** TiDB's Prisma connection string ends in `?sslaccept=strict`. The MariaDB driver that Prisma 7 uses in the app does not know that option, so `src/lib/prisma.ts` reads the URL and turns it into explicit driver settings with TLS turned on and a small connection pool. The Prisma CLI (migrations) understands `sslaccept=strict` directly.
 
 ## Getting started
 
@@ -36,14 +42,20 @@ NURTURE is a responsive web app that helps parents and teenagers talk to each ot
    npm install
    ```
 
-3. Start the development server:
+3. Create a `.env` file with `DATABASE_URL` pointing at your local MySQL database, for example:
+
+   ```
+   DATABASE_URL="mysql://root@localhost:3306/nurture"
+   ```
+
+4. Start the development server:
 
    ```bash
    npm run dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Status
 
-Early development. The landing page is in place; the database, login and deployment are still to come.
+Sprint 1 complete: the project runs locally and on Vercel, Prisma is connected to MySQL, the login provider and hosted database are chosen, and the landing page uses the Warm Earth design. Next: accounts, onboarding and the teen journal (Sprint 2).
