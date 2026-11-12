@@ -65,6 +65,6 @@ NURTURE is an educational tool. It is not a replacement for professional healthc
 
 ## Status
 
-Sprint 3 complete: sign up and sign in with Clerk, onboarding, dashboards, the private teen journal, family linking with single-use invitation codes, and the weekly conversation streak. Next: educational content, conversation starters and the feelings check-in (Sprint 4).
+Sprint 4 complete: sign up and sign in with Clerk, onboarding, dashboards, the private teen journal, family linking with single-use invitation codes, the weekly conversation streak, parent guides, sensitive conversations, scenarios, teen openers and stories, conversation starters and the feelings check-in. Next: hardening, accessibility and performance checks, and the usability test pack (Sprint 5).
 
-Run the unit tests with `npm test`.
+Run the unit tests with `npm test`. Load the draft content with `npx prisma db seed` (review `docs/content-review.md` first).
