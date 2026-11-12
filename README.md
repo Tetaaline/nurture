@@ -42,10 +42,17 @@ NURTURE is an educational tool. It is not a replacement for professional healthc
    npm install
    ```
 
-3. Create a `.env` file with `DATABASE_URL` pointing at your local MySQL database, for example:
+3. Create a `.env` file with `DATABASE_URL` pointing at your local MySQL database and a random `INVITE_CODE_SECRET`, for example:
 
    ```
    DATABASE_URL="mysql://root@localhost:3306/nurture"
+   INVITE_CODE_SECRET="a-long-random-string"
+   ```
+
+   Create `.env.local` with your Clerk keys (`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`), then create the tables:
+
+   ```bash
+   npx prisma migrate dev
    ```
 
 4. Start the development server:
@@ -58,4 +65,4 @@ NURTURE is an educational tool. It is not a replacement for professional healthc
 
 ## Status
 
-Sprint 1 complete: the project runs locally and on Vercel, Prisma is connected to MySQL, the login provider and hosted database are chosen, and the landing page uses the Warm Earth design. Next: accounts, onboarding and the teen journal (Sprint 2).
+Sprint 2 complete: sign up and sign in with Clerk, onboarding (display name and role), parent and teen dashboards, and the private teen journal with its API. Next: family linking with invitation codes and the weekly streak (Sprint 3).
