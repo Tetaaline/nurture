@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { DM_Sans, Lora } from "next/font/google";
 import "./globals.css";
 
-// Headings use Lora; body text and buttons use DM Sans.
 const lora = Lora({
   variable: "--font-lora",
   subsets: ["latin"],

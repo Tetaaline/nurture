@@ -1,21 +1,19 @@
 @import "tailwindcss";
 
-/* Warm Earth colours. Each one gives a class such as bg-primary or text-ink. */
 @theme {
-  --color-background: #fbf5ee; /* sand */
-  --color-surface: #ffffff; /* cards */
-  --color-ink: #2b1e17; /* main text */
-  --color-muted: #6b5446; /* secondary text */
-  --color-primary: #a84a32; /* terracotta: main buttons, active nav */
-  --color-primary-ink: #ffffff; /* text on primary */
-  --color-soft: #f5e3d6; /* light terracotta: highlighted cards, icon backgrounds */
-  --color-accent: #7a5c0e; /* ochre */
-  --color-accent-soft: #f6ebcb; /* light ochre cards */
+  --color-background: #fbf5ee;
+  --color-surface: #ffffff;
+  --color-ink: #2b1e17;
+  --color-muted: #6b5446;
+  --color-primary: #a84a32;
+  --color-primary-ink: #ffffff;
+  --color-soft: #f5e3d6;
+  --color-accent: #7a5c0e;
+  --color-accent-soft: #f6ebcb;
   --color-border: #eadccd;
-  --color-success: #2f8a57; /* the "linked" dot */
+  --color-success: #2f8a57;
 }
 
-/* The fonts are loaded in layout.tsx. font-heading gives Lora. */
 @theme inline {
   --font-sans: var(--font-dm-sans);
   --font-heading: var(--font-lora);
