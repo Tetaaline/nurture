@@ -34,3 +34,12 @@ h2,
 h3 {
   font-family: var(--font-lora), Georgia, serif;
 }
+
+h1,
+h2,
+h3,
+p,
+li,
+dd {
+  overflow-wrap: anywhere;
+}

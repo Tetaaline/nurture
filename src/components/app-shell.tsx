@@ -27,7 +27,7 @@ export function AppShell({ role, children }: { role: Role; children: ReactNode }
         <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-[22px] py-3">
           <Link
             href={role === "PARENT" ? "/parent" : "/teen"}
-            className={`rounded-[10px] text-lg font-bold tracking-[0.18em] text-primary ${focusRing}`}
+            className={`inline-flex min-h-11 items-center rounded-[10px] text-lg font-bold tracking-[0.18em] text-primary ${focusRing}`}
           >
             NURTURE
           </Link>
@@ -57,7 +57,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
       <header className="flex items-center justify-between">
         <Link
           href="/"
-          className={`rounded-[10px] text-lg font-bold tracking-[0.18em] text-primary ${focusRing}`}
+          className={`inline-flex min-h-11 items-center rounded-[10px] text-lg font-bold tracking-[0.18em] text-primary ${focusRing}`}
         >
           NURTURE
         </Link>

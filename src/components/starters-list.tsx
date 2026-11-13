@@ -45,7 +45,7 @@ export async function StartersList({ role }: { role: Role }) {
                     {topic && section && (
                       <Link
                         href={`${section.basePath}/${topic.id}`}
-                        className={`self-start text-sm font-bold text-primary hover:underline ${focusRing}`}
+                        className={`inline-flex min-h-11 items-center self-start rounded-[10px] text-sm font-bold text-primary hover:underline ${focusRing}`}
                       >
                         Read: {topic.title}
                       </Link>
