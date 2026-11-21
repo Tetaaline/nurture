@@ -363,6 +363,7 @@ function connectionConfig(url: string) {
     database: decodeURIComponent(parsed.pathname.replace(/^\//, "")),
     ssl: tls ? { rejectUnauthorized: true } : undefined,
     connectionLimit: 2,
+    connectTimeout: 10_000,
     minimumIdle: 0,
   };
 }
