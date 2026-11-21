@@ -91,14 +91,23 @@ export async function getActiveCode(familyId: string) {
 
 async function assertNotLocked(userId: string, now: Date) {
   const failures = await prisma.redemptionAttempt.findMany({
-    where: { userId, success: false, createdAt: { gte: new Date(now.getTime() - FAILURE_WINDOW_MS) } },
+    where: {
+      userId,
+      success: false,
+      createdAt: { gte: new Date(now.getTime() - FAILURE_WINDOW_MS - LOCKOUT_MS) },
+    },
     orderBy: { createdAt: "asc" },
     select: { createdAt: true },
-    take: MAX_FAILURES,
   });
-  if (failures.length < MAX_FAILURES) return;
-  const retryAt = new Date(failures[MAX_FAILURES - 1].createdAt.getTime() + LOCKOUT_MS);
-  if (retryAt > now) throw new RateLimitedError(retryAt);
+  // The lockout runs 15 minutes from the fifth failure, even after the earlier failures leave the window.
+  let retryAt: Date | null = null;
+  for (let i = MAX_FAILURES - 1; i < failures.length; i++) {
+    const first = failures[i - MAX_FAILURES + 1].createdAt.getTime();
+    const fifth = failures[i].createdAt.getTime();
+    const until = new Date(fifth + LOCKOUT_MS);
+    if (fifth - first <= FAILURE_WINDOW_MS && until > now) retryAt = until;
+  }
+  if (retryAt) throw new RateLimitedError(retryAt);
 }
 
 async function recordAttempt(userId: string, success: boolean) {
