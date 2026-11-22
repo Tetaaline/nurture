@@ -41,9 +41,8 @@ Prototype built in five sprints. Live at https://nurture-chi-flax.vercel.app. Co
 
 ## 2. Not finished or deferred, and why
 
-- **Hosted database migration and seed on TiDB.** The connection string is only on the owner's machine and in Vercel. Until the owner runs `prisma migrate deploy` and `prisma db seed` against TiDB, the live site can sign users in but onboarding and every database page will show "Something went wrong". The exact command is in the README.
-- **Browser run-through of onboarding, the journal screens and Clerk's sign-up flow.** Everything server-side was tested headlessly with real sessions, but the Clerk sign-up form and the onboarding form need a browser. Steps are in the chat hand-over and in `docs/usability-test.md`.
-- **Lighthouse and 390px checks were run on localhost**, not the live site, because the live database is not yet migrated. The numbers are in `docs/notes/sprint-5.md`.
+- **Clerk's sign-up form** (email, verification code) has not been run end to end by a person on the live site. Onboarding, dashboards, the journal, check-ins, linking, the streak and every content section were verified live on 22 Nov 2026 with headless Chrome and real sessions (details in `docs/notes/sprint-5.md`).
+- **The 390px layout check** was done on localhost; the live pages visited on 22 Nov 2026 also had no horizontal scroll at 390px.
 - **Content accuracy review** is the owner's task (`docs/content-review.md`); the text is draft.
 - **Unlinking a family, editing a display name, translations** and other extras are listed in `docs/later.md` and were not in the sprint plan.
 
@@ -83,8 +82,7 @@ Content
 
 ## 4. What the owner still needs to do
 
-1. Run the TiDB migration and seed from their own terminal (command in the README under Deploying), then open the live site and complete onboarding once as a parent and once as a teen to confirm the database works online.
+1. Sign up once on the live site with a fresh `+clerk_test@example.com` email in a real browser to see Clerk's sign-up form and onboarding with your own eyes. Parent A and Teen A are already linked on the live site (from the live check), so use fresh accounts for the linking steps of the checklist above.
 2. Review every item in `docs/content-review.md`, fix wording in `prisma/seed.ts`, and re-run the seed locally and on TiDB.
 3. Run the usability sessions with `docs/usability-test.md`, using fresh `+clerk_test@example.com` accounts and the code 424242.
 4. Move the Sprint 2-5 cards on the project board; all Sprint 1 issues were closed by commits.
-5. Optional: run Lighthouse on the live site after the migration and record the numbers next to the localhost ones in `docs/notes/sprint-5.md`.

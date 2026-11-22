@@ -113,4 +113,4 @@ $env:DATABASE_URL="<TiDB connection string>"; npx prisma migrate deploy; npx pri
 
 ## Status
 
-All five sprints complete. Before real users: review the content (`docs/content-review.md`), migrate and seed the hosted database, and run the usability sessions (`docs/usability-test.md`).
+All five sprints complete. The hosted database is migrated and seeded, and the live site was checked end to end on 22 Nov 2026. Before real users: review the content (`docs/content-review.md`) and run the usability sessions (`docs/usability-test.md`).
