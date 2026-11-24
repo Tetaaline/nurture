@@ -21,6 +21,7 @@ export function JournalEntryView({ entry }: { entry: Entry }) {
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
 
   async function handleDelete() {
     setDeleting(true);
@@ -44,13 +45,24 @@ export function JournalEntryView({ entry }: { entry: Entry }) {
   if (editing) {
     return (
       <Card>
-        <JournalEditor entry={entry} onCancel={() => setEditing(false)} />
+        <JournalEditor
+          entry={entry}
+          onCancel={() => setEditing(false)}
+          onSaved={() => {
+            setEditing(false);
+            setSaved(true);
+            router.refresh();
+          }}
+        />
       </Card>
     );
   }
 
   return (
     <div className="flex flex-col gap-4">
+      <div role="status" aria-live="polite" className="empty:hidden">
+        {saved && <Notice tone="success">Saved. Your changes are up to date.</Notice>}
+      </div>
       <Card className="flex flex-col gap-3">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-semibold text-ink">
@@ -80,8 +92,21 @@ export function JournalEntryView({ entry }: { entry: Entry }) {
         </Card>
       ) : (
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Button onClick={() => setEditing(true)}>Edit</Button>
-          <Button variant="danger" onClick={() => setConfirming(true)}>
+          <Button
+            onClick={() => {
+              setSaved(false);
+              setEditing(true);
+            }}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => {
+              setSaved(false);
+              setConfirming(true);
+            }}
+          >
             Delete
           </Button>
         </div>

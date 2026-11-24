@@ -19,9 +19,11 @@ type ApiResult = {
 export function JournalEditor({
   entry,
   onCancel,
+  onSaved,
 }: {
   entry?: Entry;
   onCancel?: () => void;
+  onSaved?: () => void;
 }) {
   const router = useRouter();
   const [title, setTitle] = useState(entry?.title ?? "");
@@ -45,6 +47,10 @@ export function JournalEditor({
       if (!response.ok) {
         setFields(result.fields ?? {});
         setError(result.fields ? null : (result.error ?? GENERIC_ERROR));
+        return;
+      }
+      if (onSaved) {
+        onSaved();
         return;
       }
       const id = result.entry?.id ?? entry?.id;
