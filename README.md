@@ -165,6 +165,8 @@ unset DATABASE_URL
 - Use `migrate deploy` (not `migrate dev`) for the hosted database: it only applies existing migrations and never resets data.
 - An exported variable takes priority over the value in `.env`, so `unset` it afterwards to go back to your local database.
 
+**Keeping the database awake.** The free TiDB Starter database goes to sleep when nobody uses it, and the first request after that can be slow. An uptime monitor pings https://nurture-chi-flax.vercel.app/api/health every 5 minutes to keep it awake. The endpoint needs no login, runs `SELECT 1` and returns `{"status":"ok"}` (200), or `{"status":"error"}` (503) if the database cannot be reached. It returns no user data.
+
 ## Documentation
 
 - `docs/notes/sprint-1.md` to `sprint-5.md`: what each sprint built, how it works and how it was tested.
