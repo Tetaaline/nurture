@@ -48,42 +48,94 @@ NURTURE is an educational tool. It is not a replacement for professional healthc
 
 ## Run it locally
 
-1. Clone the repository and install dependencies:
+These steps start from a computer with nothing installed. Run every command in **Git Bash** (installed with Git for Windows) or any macOS/Linux terminal.
 
-   ```bash
-   git clone https://github.com/Tetaaline/nurture.git
-   cd nurture
-   npm install
-   ```
+### 1. Install the tools
 
-2. Start MySQL (XAMPP) and create an empty database called `nurture`.
+- **Node.js 20.9 or newer** (the LTS version from https://nodejs.org is fine; the project was built on Node 24). npm comes with it. Check with `node -v`.
+- **Git** from https://git-scm.com (on Windows this also installs Git Bash).
+- **XAMPP** from https://www.apachefriends.org, for the local MySQL (MariaDB) database.
 
-3. Create a `.env` file with your local database URL and a random secret for invitation codes:
+### 2. Get the code
 
-   ```
-   DATABASE_URL="mysql://root@localhost:3306/nurture"
-   INVITE_CODE_SECRET="a-long-random-string"
-   ```
+```bash
+git clone https://github.com/Tetaaline/nurture.git
+cd nurture
+npm install
+```
 
-4. Create `.env.local` with your Clerk keys from the Clerk dashboard:
+### 3. Create the local database
 
-   ```
-   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-   CLERK_SECRET_KEY=sk_test_...
-   ```
+1. Open the XAMPP Control Panel and click **Start** next to **MySQL**.
+2. Click **Admin** next to MySQL (or open http://localhost/phpmyadmin after starting Apache too), choose **New**, type `nurture` as the database name and click **Create**. Leave it empty; Prisma creates the tables.
 
-5. Create the tables and load the draft content:
+You can also create it from Git Bash with XAMPP's own client (default XAMPP path on Windows):
 
-   ```bash
-   npx prisma migrate dev
-   npx prisma db seed
-   ```
+```bash
+/c/xampp/mysql/bin/mysql -u root -e "CREATE DATABASE nurture;"
+```
 
-6. Start the development server and open http://localhost:3000:
+### 4. Create the environment files
 
-   ```bash
-   npm run dev
-   ```
+Both files go in the project folder (next to `package.json`). They are ignored by Git, so they never get committed.
+
+| File | Variable | Where the value comes from |
+| --- | --- | --- |
+| `.env` | `DATABASE_URL` | Your local XAMPP database: `mysql://root@localhost:3306/nurture` (XAMPP's `root` user has no password by default; if you set one, use `mysql://root:YOURPASSWORD@localhost:3306/nurture`). |
+| `.env` | `INVITE_CODE_SECRET` | Any long random string. It is the key used to hash invitation codes. Generate one with the command below. |
+| `.env.local` | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk dashboard (https://dashboard.clerk.com) → your application → **Configure** → **API keys**. Starts with `pk_test_`. |
+| `.env.local` | `CLERK_SECRET_KEY` | Same page in the Clerk dashboard. Starts with `sk_test_`. Keep it secret. |
+
+Generate a secret for `INVITE_CODE_SECRET`:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Then create the two files (paste your own values in place of the placeholders):
+
+```bash
+cat > .env <<'END'
+DATABASE_URL="mysql://root@localhost:3306/nurture"
+INVITE_CODE_SECRET="paste-the-generated-string-here"
+END
+
+cat > .env.local <<'END'
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_paste-yours-here
+CLERK_SECRET_KEY=sk_test_paste-yours-here
+END
+```
+
+If you use your own Clerk application rather than the project's, turn on **Email** sign-in with a verification code under **Configure** → **User & authentication**.
+
+### 5. Create the tables and load the content
+
+```bash
+npx prisma migrate dev
+npx prisma db seed
+```
+
+`migrate dev` creates all tables in the `nurture` database and generates the Prisma client. `db seed` loads the draft guides, topics, scenarios, stories and conversation starters. Prisma finds its settings in `prisma.config.ts` automatically.
+
+### 6. Start the app
+
+```bash
+npm run dev
+```
+
+Open http://localhost:3000.
+
+### 7. Sign up with a test email
+
+Clerk's development mode accepts test emails that need no real inbox:
+
+1. Click **Create an account**.
+2. Use an email that ends in `+clerk_test@example.com`, for example `grader.parent+clerk_test@example.com`.
+3. Choose any password (at least 8 characters).
+4. When asked for the verification code, enter **424242**.
+5. On the onboarding page, enter a display name and choose **Parent** or **Teen**.
+
+To try family linking, sign up a second test user with the other role in a private window, generate a code on the parent's Connect page and enter it on the teen's Connect page.
 
 For a production build, run `npm run build` then `npm start`.
 
@@ -93,15 +145,25 @@ For a production build, run `npm run build` then `npm start`.
 npm test
 ```
 
-This runs the Vitest unit tests, including the weekly streak calculation (`src/lib/streak.test.ts`).
+This runs the Vitest unit tests, including the weekly streak calculation (`src/lib/streak.test.ts`) and the invitation code helpers. The tests need no database.
 
-## Deploying
+## Hosted database and deploying
 
-Pushes to `main` deploy to Vercel. Vercel needs `DATABASE_URL` (TiDB), `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY` and `INVITE_CODE_SECRET`. To migrate and seed the hosted database from your own machine, set `DATABASE_URL` to the TiDB connection string for that one command:
+Pushes to `main` deploy to Vercel. Vercel needs `DATABASE_URL` (TiDB), `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY` and `INVITE_CODE_SECRET`.
 
-```powershell
-$env:DATABASE_URL="<TiDB connection string>"; npx prisma migrate deploy; npx prisma db seed; Remove-Item Env:DATABASE_URL
+To migrate and seed the hosted TiDB database from your own machine, set `DATABASE_URL` for the current Git Bash session only, run the commands, then remove it:
+
+```bash
+export DATABASE_URL='mysql://USER:PASSWORD@HOST:4000/test?sslaccept=strict'
+npx prisma migrate deploy
+npx prisma db seed
+unset DATABASE_URL
 ```
+
+- Copy the connection string from TiDB Cloud (cluster `nurture` → **Connect** → Prisma). It must end with `?sslaccept=strict`, otherwise the connection is refused because TiDB requires TLS.
+- Use single quotes so Git Bash does not change special characters in the password.
+- Use `migrate deploy` (not `migrate dev`) for the hosted database: it only applies existing migrations and never resets data.
+- An exported variable takes priority over the value in `.env`, so `unset` it afterwards to go back to your local database.
 
 ## Documentation
 
@@ -113,4 +175,4 @@ $env:DATABASE_URL="<TiDB connection string>"; npx prisma migrate deploy; npx pri
 
 ## Status
 
-All five sprints complete. The hosted database is migrated and seeded, and the live site was checked end to end on 22 Nov 2026. Before real users: review the content (`docs/content-review.md`) and run the usability sessions (`docs/usability-test.md`).
+All five planned sprints are built and the live site is running on the migrated and seeded TiDB database (checked on 22 Nov 2026). Still open: the draft content has not yet been reviewed (`docs/content-review.md`), the usability sessions with adult testers have not been run yet (`docs/usability-test.md`), and Clerk's sign-up form has not been completed end to end by a person on the live site. See `docs/final-report.md` for details.
