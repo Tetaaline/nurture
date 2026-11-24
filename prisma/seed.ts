@@ -363,7 +363,9 @@ function connectionConfig(url: string) {
     database: decodeURIComponent(parsed.pathname.replace(/^\//, "")),
     ssl: tls ? { rejectUnauthorized: true } : undefined,
     connectionLimit: 2,
-    connectTimeout: 10_000,
+    // TiDB Starter can take several seconds to wake up after being idle.
+    connectTimeout: 20_000,
+    acquireTimeout: 30_000,
     minimumIdle: 0,
   };
 }

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Prisma } from "@generated/prisma/client";
 import type { Role } from "@generated/prisma/enums";
 import { dashboardPath } from "@/lib/auth";
+import { retryOnPoolTimeout } from "@/lib/db-retry";
 import { GENERIC_ERROR, fieldErrors } from "@/lib/http";
 import { prisma } from "@/lib/prisma";
 
@@ -55,15 +56,17 @@ export async function completeOnboarding(
 
   const { displayName, role } = parsed.data;
   try {
-    await prisma.$transaction(async (tx) => {
-      const user = await tx.user.create({
-        data: { authProviderId: userId, email, displayName, role },
-        select: { id: true },
-      });
-      if (role === "PARENT") {
-        await tx.family.create({ data: { parentId: user.id } });
-      }
-    });
+    await retryOnPoolTimeout(() =>
+      prisma.$transaction(async (tx) => {
+        const user = await tx.user.create({
+          data: { authProviderId: userId, email, displayName, role },
+          select: { id: true },
+        });
+        if (role === "PARENT") {
+          await tx.family.create({ data: { parentId: user.id } });
+        }
+      }),
+    );
   } catch (error) {
     // Two submissions can race; the first one wins and the second just follows it.
     const duplicate =
